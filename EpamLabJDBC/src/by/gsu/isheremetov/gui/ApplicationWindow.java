@@ -64,7 +64,7 @@ public class ApplicationWindow {
 	}
 
 	private void makeBills() throws SQLException {
-		DatabaseConnector.execute("exec makeBills");
+		DatabaseConnector.execute("call makeBills();");
 	}
 
 	public static void loadUsers() throws SQLException {
@@ -107,6 +107,7 @@ public class ApplicationWindow {
 					ApplicationWindow window = new ApplicationWindow();
 					if (!authorized) {
 						window.frame.dispose();
+						DatabaseConnector.dispose();
 					} else {
 						window.frame.setVisible(true);
 					}
@@ -193,6 +194,12 @@ public class ApplicationWindow {
 					for (Frame fr : Frame.getFrames()) {
 						fr.dispose();
 					}
+					try {
+						DatabaseConnector.dispose();
+					} catch (SQLException e) {
+						JOptionPane.showMessageDialog(null, e.getMessage(),
+								"Ошибка!", JOptionPane.ERROR_MESSAGE);
+					}
 				}
 			});
 			menuFile.add(menuItemExit);
@@ -223,9 +230,15 @@ public class ApplicationWindow {
 				menuItemAdminBills.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseReleased(MouseEvent arg0) {
-						BillsDialog BillsDialog = new BillsDialog(userContainer
-								.get(list.getSelectedIndex()));
-						BillsDialog.setVisible(true);
+						if (list.getSelectedIndex() >= 0) {
+							BillsDialog BillsDialog = new BillsDialog(
+									userContainer.get(list.getSelectedIndex()));
+							BillsDialog.setVisible(true);
+						} else {
+							JOptionPane.showMessageDialog(null,
+									"Не выбран пользователь.", "Ошибка.",
+									JOptionPane.INFORMATION_MESSAGE);
+						}
 					}
 				});
 				//

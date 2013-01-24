@@ -51,10 +51,10 @@ begin
 	declare sid int;
 	declare d DATETIME;
 	set d = curdate();
-	select sid = min(subscribes.id) from subscribes where active > 0;
+	set sid := (select min(id) from subscribes where active > 0);
 	while sid is not null do
 		insert into bills (subscribeid, payed, date) values (sid, 0, d);
-		select sid = min(subscribes.id) from subscribes where id > sid and active > 0;
+		set sid := (select min(id) from subscribes where id > sid and active > 0);
 	end while;
 end$$
 
